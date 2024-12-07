@@ -9,11 +9,11 @@ This setup has been tested the following environment:
 - Ubuntu 22.04.3 LTS
 - Docker version 27.2.1
 
-1. Clone the repository to your computer and enter the directory:
+1. Clone the repository to your computer and enter the directory:  
    `git clone <GitHub-URL> && cd <repository-name>`
-2. Execute the script to build the Docker images and run the containers:
+2. Execute the script to build the Docker images and run the containers:  
    `src/run_containers.sh`
-3. Execute the script to run the Python application:
+3. Execute the script to run the Python application:  
    `src/run_application.sh`
 
 ## Example walkthrough of the application
