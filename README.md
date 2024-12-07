@@ -2,10 +2,6 @@
 
 **Authors:** Dalia Lablack, Mathieu Stenzel
 
-## Description
-
-See `docs/midterm-report.pdf` for a detailed description of the project.
-
 ## Setup
 
 This setup has been tested the following environment:
