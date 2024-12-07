@@ -1,0 +1,30 @@
+# https://github.com/sfuhrm/docker-opendaylight/blob/master/README.md
+
+FROM ubuntu:22.04
+
+RUN mkdir /opt/odl
+WORKDIR /opt/odl
+
+# Install required packages
+RUN apt-get update && apt-get install -y \
+    wget \
+    openjdk-8-jre-headless
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
+RUN echo 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre' >> ~/.bashrc
+
+# Install OpenDaylight
+RUN wget https://nexus.opendaylight.org/content/repositories/opendaylight.release/org/opendaylight/integration/karaf/0.8.4/karaf-0.8.4.tar.gz
+RUN tar -xvf karaf-0.8.4.tar.gz --strip-components=1
+
+# Configure OpenDaylight features
+ENV KARAF_FEATURES="odl-mdsal-apidocs,odl-restconf,odl-dluxapps-applications,odl-l2switch-switch"
+RUN sed -i -e"s/^featuresBoot = \([0-9a-fA-F-]*\)\$/featuresBoot = \1,${KARAF_FEATURES}/" etc/org.apache.karaf.features.cfg
+
+EXPOSE 8181 8101 6633
+
+ENTRYPOINT [ "bin/karaf", "server" ]
+
+# Configure OpenDaylight user
+RUN useradd --home-dir /opt/odl odl
+RUN chown -R odl:odl /opt/odl
+USER odl

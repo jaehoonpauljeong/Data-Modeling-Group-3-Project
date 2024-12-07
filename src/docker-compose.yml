@@ -1,0 +1,45 @@
+# https://github.com/iwaseyusuke/docker-mininet/blob/main/README.md
+
+services:
+  opendaylight:
+    build:
+      context: .
+      dockerfile: Dockerfile_OpenDaylight
+    container_name: opendaylight
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+    networks:
+      SDNNetwork:
+        ipv4_address: 172.18.0.2
+    ports:
+      - "8181:8181"
+      - "830:830"
+  mininet:
+    build: 
+      context: .
+      dockerfile: Dockerfile_Mininet
+    container_name: mininet
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+    privileged: true
+    tty: true
+    volumes:
+      - /lib/modules:/lib/modules
+      - ./mininet_data:/opt/mn/mininet_data
+    networks:
+      SDNNetwork:
+        ipv4_address: 172.18.0.3
+
+networks:
+  SDNNetwork:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+          gateway: 172.18.0.1

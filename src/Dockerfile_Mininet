@@ -1,0 +1,49 @@
+# https://github.com/iwaseyusuke/docker-mininet/blob/main/README.md
+
+FROM ubuntu:22.04
+
+RUN mkdir /opt/mn
+WORKDIR /opt/mn
+RUN mkdir mininet_data
+
+RUN apt-get update && apt-get install -y \
+    curl \
+    dnsutils \
+    ifupdown \
+    iproute2 \
+    iptables \
+    iputils-ping \
+    mininet \
+    net-tools \
+    openvswitch-switch \
+    openvswitch-testcontroller \
+    sudo \
+    tcpdump \
+    vim \
+    x11-xserver-utils \
+    xterm \
+    python3-pip \
+ && rm -rf /var/lib/apt/lists/*
+
+# Install pip packages
+RUN pip3 install networkx
+RUN pip3 install requests
+
+# Create empty network interfaces file
+RUN touch /etc/network/interfaces
+
+EXPOSE 6633 6653 6640
+
+COPY ./ENTRYPOINT_Mininet.sh /
+RUN chmod +x /ENTRYPOINT_Mininet.sh
+ENTRYPOINT ["/ENTRYPOINT_Mininet.sh"]
+
+# Configure Mininet user
+RUN useradd --home-dir /opt/mn mn
+RUN chown -R mn:mn /opt/mn
+RUN echo "mn ALL=(ALL) NOPASSWD: /usr/bin/mn" > /etc/sudoers.d/mn && \
+    echo "mn ALL=(ALL) NOPASSWD: /usr/bin/python3" > /etc/sudoers.d/mn && \
+    echo "mn ALL=(ALL) NOPASSWD: /usr/sbin/service openvswitch-switch start" >> /etc/sudoers.d/mn && \
+    echo "mn ALL=(ALL) NOPASSWD: /usr/sbin/service openvswitch-switch stop" >> /etc/sudoers.d/mn && \
+    echo "mn ALL=(ALL) NOPASSWD: /usr/bin/ovs-vsctl" >> /etc/sudoers.d/mn
+USER mn
